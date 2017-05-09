@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Todo</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="app">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">VUEDO</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Todo</a></li>
+          <li v-on:click="signOut"><a href="#">Log Out</a></li>
+        </ul>
+      </div>
+    </nav>
+    <table class="table table-responsive table-hover">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Status</th>
+          <th>Todo</th>
+          <th>Due Date</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(todo, index) in todos">
+          <td>{{index+1}}</td>
+          <td>
+            <input type="checkbox" :checked="todo.is_complete" @click="changeStatus(todo)">  
+          </td>
+          <td><input type="text" :value="todo.title" v-model="todo.title" @keypress.enter="changeTitle(todo)"></td>
+          <td>{{toUTCString(todo.due_date)}}</td>
+          <td><button type="button" class="btn btn-danger" @click="deleteTodo(todo)"><span class="glyphicon glyphicon-remove"></span></button></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2"></td>
+          <td><input type="text" v-model="newTodo.title" @keypress.enter="addTodo(newTodo)" /></td>
+          <td><input type="date" min="" v-model="newTodo.due_date" @keypress.enter="addTodo(newTodo)" /></td>
+          <td><button type="button" class="btn btn-success" @click="addTodo(newTodo)"><span class="glyphicon glyphicon-ok"></span></button></td>
+        </tr>
+      </tfoot>
+    </table>
+    </div>
+
+</body>
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      todos: [],
+      newTodo: {},
+      today: function() {
+
+      }
+    },
+    beforeCreate: function(){
+      if(localStorage.getItem('token')===null){
+        location.href="index.html"
+      }
+    },
+    created: function() {
+      axios.get('http://localhost:3000/todos', {
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      }).then((response) => {
+        console.log(response)
+        this.todos = response.data.todos
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    methods: {
+      changeStatus: function(todo) {
+        axios.put('http://localhost:3000/todos/' + todo._id, {
+          is_complete: !todo.is_complete
+        }, {
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        }).then((response) => {
+          console.log(response)
+          todo.is_complete = !todo.is_complete
+        }).catch((err) => {
+          console.log(err)
+        })
+      },
+      deleteTodo: function(todo) {
+        axios.delete('http://localhost:3000/todos/' + todo._id, {
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        }).then((response) => {
+          this.todos.splice(this.todos.indexOf(todo), 1)
+        }).catch((err) => {
+          console.log(err);
+        })
+      },
+      changeTitle: function(todo) {
+        axios.put('http://localhost:3000/todos/' + todo._id, {
+          title: todo.title
+        }, {
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        }).then((response) => {
+          console.log(response)
+        }).catch((err) => {
+          console.log(err)
+        })
+      },
+      addTodo: function(todo) {
+        axios.post('http://localhost:3000/todos', {
+          title: todo.title,
+          due_date: todo.due_date
+        }, {
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        }).then((response) => {
+          this.todos.push(response.data)
+          console.log(response)
+        }).catch((err) => {
+          console.log(err)
+        })
+      },
+      toUTCString: function(date) {
+        if (!date) return
+        let d = new Date(date)
+        return d.toUTCString().slice(0,-12)
+      },
+      signOut: function() {
+        localStorage.removeItem('token')
+        location.href = "index.html"
+      }
+    }
+  })
+</script>
+
+</html>
