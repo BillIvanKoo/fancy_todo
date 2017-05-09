@@ -7,7 +7,8 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -22,19 +23,50 @@
         </ul>
       </div>
     </nav>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Register</h4>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="">Username:</label>
+                <input type="text" v-model="username" placeholder="Enter username" class="form-control" required/>
+              </div>
+              <div class="form-group">
+                <label for="">Password:</label>
+                <input type="password" v-model="password" placeholder="Enter password" class="form-control" required/>
+              </div>
+              <div class="form-group">
+                <label for="">Phone number:</label>
+                <input type="text" v-model="phone" placeholder="Enter phone number" class="form-control" required/>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal" @click="signUp">Sign Up</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container">
       <form>
         <div class="form-group">
           <label for="">Username:</label>
-          <input type="text" v-model="username" placeholder="Enter username" class="form-control"/>
+          <input type="text" v-model="username" placeholder="Enter username" class="form-control" required/>
         </div>
         <div class="form-group">
           <label for="">Password:</label>
-          <input type="password" v-model="password" placeholder="Enter password" class="form-control"/>
+          <input type="password" v-model="password" placeholder="Enter password" class="form-control" required/>
         </div>
         <button type="button" v-on:click="signIn" class="btn btn-default">Sign In</button>
         <fb:login-button class="btn btn-default" scope="public_profile,email" onlogin="checkLoginState()">
-        </fb:login-button>
+      </fb:login-button><br><br>
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Create Account</button>
       </form>
     </div>
   </div>
@@ -45,7 +77,8 @@
     el: '#app',
     data: {
       username: '',
-      password: ''
+      password: '',
+      phone: ''
     },
     created: function() {
       window.fbAsyncInit = function() {
@@ -81,6 +114,19 @@
           console.log(response.data)
           localStorage.setItem('token', response.data)
           location.href="todo.html"
+        }).catch((err) => {
+          console.log(err);
+        })
+      },
+      signUp: function() {
+        axios.post('http://localhost:3000/login/register', {
+          username: this.username,
+          password: this.password,
+          phone: this.phone
+        }).then((response) => {
+          alert('user successfully created')
+          console.log(response)
+          this.signIn()
         }).catch((err) => {
           console.log(err);
         })

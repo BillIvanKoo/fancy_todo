@@ -7,7 +7,6 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vue"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -23,38 +22,39 @@
         </ul>
       </div>
     </nav>
-    <table class="table table-responsive table-hover">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Status</th>
-          <th>Todo</th>
-          <th>Due Date</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(todo, index) in todos">
-          <td>{{index+1}}</td>
-          <td>
-            <input type="checkbox" :checked="todo.is_complete" @click="changeStatus(todo)">  
-          </td>
-          <td><input type="text" :value="todo.title" v-model="todo.title" @keypress.enter="changeTitle(todo)"></td>
-          <td>{{toUTCString(todo.due_date)}}</td>
-          <td><button type="button" class="btn btn-danger" @click="deleteTodo(todo)"><span class="glyphicon glyphicon-remove"></span></button></td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2"></td>
-          <td><input type="text" v-model="newTodo.title" @keypress.enter="addTodo(newTodo)" /></td>
-          <td><input type="date" min="" v-model="newTodo.due_date" @keypress.enter="addTodo(newTodo)" /></td>
-          <td><button type="button" class="btn btn-success" @click="addTodo(newTodo)"><span class="glyphicon glyphicon-ok"></span></button></td>
-        </tr>
-      </tfoot>
-    </table>
+    <div class="container">
+      <table class="table table-responsive table-hover">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Status</th>
+            <th>Todo</th>
+            <th>Due Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(todo, index) in todos">
+            <td>{{index+1}}</td>
+            <td>
+              <input type="checkbox" :checked="todo.is_complete" @click="changeStatus(todo)">  
+            </td>
+            <td><input type="text" :value="todo.title" v-model="todo.title" @keypress.enter="changeTitle(todo)"></td>
+            <td>{{toUTCString(todo.due_date)}}</td>
+            <td><button type="button" class="btn btn-danger" @click="deleteTodo(todo)"><span class="glyphicon glyphicon-remove"></span></button></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"></td>
+            <td><input type="text" v-model="newTodo.title" @keypress.enter="addTodo(newTodo)" /></td>
+            <td><input type="date" min="" v-model="newTodo.due_date" @keypress.enter="addTodo(newTodo)" /></td>
+            <td><button type="button" class="btn btn-success" @click="addTodo(newTodo)"><span class="glyphicon glyphicon-ok"></span></button></td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
-
+  </div>
 </body>
 <script>
   var app = new Vue({

@@ -13,7 +13,8 @@ findUsers = (req, res) => {
 addUser = (req, res) => {
   var user = new User({
     username: req.body.username,
-    password: bcrypt.hashSync(req.body.password,10)
+    password: bcrypt.hashSync(req.body.password,10),
+    phone: req.body.phone
   })
   user.save(function (err, user){
     if (err) res.send(err)
