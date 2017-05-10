@@ -39,7 +39,7 @@
             <td>
               <input type="checkbox" :checked="todo.is_complete" @click="changeStatus(todo)">  
             </td>
-            <td><input type="text" :value="todo.title" v-model="todo.title" @keypress.enter="changeTitle(todo)"></td>
+            <td><input type="text" :value="todo.title" v-model="todo.title" @keyup="changeTitle(todo)"></td>
             <td>{{toUTCString(todo.due_date)}}</td>
             <td><button type="button" class="btn btn-danger" @click="deleteTodo(todo)"><span class="glyphicon glyphicon-remove"></span></button></td>
           </tr>
@@ -99,15 +99,18 @@
         })
       },
       deleteTodo: function(todo) {
-        axios.delete('http://localhost:3000/todos/' + todo._id, {
-          headers: {
-            token: localStorage.getItem('token')
-          }
-        }).then((response) => {
-          this.todos.splice(this.todos.indexOf(todo), 1)
-        }).catch((err) => {
-          console.log(err);
-        })
+        var del = confirm('are you sure?')
+        if (del===true){
+          axios.delete('http://localhost:3000/todos/' + todo._id, {
+            headers: {
+              token: localStorage.getItem('token')
+            }
+          }).then((response) => {
+            this.todos.splice(this.todos.indexOf(todo), 1)
+          }).catch((err) => {
+            console.log(err);
+          })
+        }
       },
       changeTitle: function(todo) {
         axios.put('http://localhost:3000/todos/' + todo._id, {

@@ -11,10 +11,11 @@ findUsers = (req, res) => {
 }
 
 addUser = (req, res) => {
-  var user = new User({
+  let user = new User({
     username: req.body.username,
     password: bcrypt.hashSync(req.body.password,10),
-    phone: req.body.phone
+    phone: req.body.phone,
+    email: req.body.email
   })
   user.save(function (err, user){
     if (err) res.send(err)
@@ -26,11 +27,30 @@ createToken = (req,res) =>{
   let user = req.user
   User.findOne({username: user.username}).then((user)=>{
     let newToken = jwt.sign({
-      _id: user._id,
-      username: user.username
+      _id: user._id
     },'secret',{ expiresIn: '1h' })
     res.send(newToken)
   })
 }
 
-module.exports = {addUser, findUsers, createToken};
+findOrCreateUserFb = (req,res) => {
+  User.findOne({facebookId: req.params.fb}).then((user)=>{
+    if(!user){
+      let user = new User({
+        facebookId: req.params.fb
+      })
+      user.save(function(err,user){
+        let newToken = jwt.sign({
+          _id: user._id
+        },'secret',{ expiresIn: '1h' })
+        res.send(newToken)
+      })
+    } else {
+      let newToken = jwt.sign({
+        _id: user._id
+      },'secret',{ expiresIn: '1h' })
+      res.send(newToken)
+    }
+  })
+}
+module.exports = {addUser, findUsers, createToken, findOrCreateUserFb};
